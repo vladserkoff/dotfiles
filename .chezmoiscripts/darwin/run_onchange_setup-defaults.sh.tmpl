@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# https://www.chezmoi.io/user-guide/use-scripts-to-perform-actions/#run-a-script-when-the-contents-of-another-file-changes
+# .macos hash: {{ include ".macos" | sha256sum }}
+
+printf '\nInitializing MacOS Settings...\n'
+sh {{ .chezmoi.sourceDir }}/.macos
+printf '\nMacOS Settings is Done!!\n'

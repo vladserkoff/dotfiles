@@ -1,0 +1,27 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+
+cat > $HOME/.Brewfile <<EOF
+{{ range .packages.darwin.taps -}}
+tap {{ . | quote | replace " " "\", \"" }}
+{{ end -}}
+{{ range .packages.darwin.brews -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.darwin.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+{{ range .packages.darwin.mas -}}
+mas {{ .name | quote }}, id: {{ .id }}
+{{ end -}}
+EOF
+brew bundle --no-lock --global
+
+{{ if eq (default "0" (env "BUNDLE_CLEANUP")) "1" }}
+brew bundle cleanup --global --force
+{{ end }}
+
+{{ range .packages.darwin.fisher -}}
+fish -c 'fisher install {{ . | quote }}'
+{{ end -}}
+{{ end -}}

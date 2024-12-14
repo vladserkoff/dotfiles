@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -ex
+
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/MikeMcQuaid/strap/HEAD/strap.sh)"
+
+# link .ssh from icloud
+if [ -e /Users/$USER/.ssh ]; then
+    echo "ssh config already symlinked"
+else
+    ln -s "/Users/$USER/Library/Mobile Documents/com~apple~CloudDocs/dev/.ssh" "/Users/$USER/.ssh"
+fi;
+
+# link projects from icloud
+if [ -e /Users/$USER/projects ]; then
+    echo "projects already symlinked"
+else
+    ln -s "/Users/$USER/Library/Mobile Documents/com~apple~CloudDocs/dev/projects" "/Users/$USER/projects"
+fi;
+
+brew install chezmoi
+chezmoi init vladserkoff
+chezmoi apply

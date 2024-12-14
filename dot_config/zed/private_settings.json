@@ -1,0 +1,79 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "assistant": {
+    "default_model": {
+      "provider": "zed.dev",
+      "model": "claude-3-5-sonnet-latest"
+    },
+    "version": "2"
+  },
+  "languages": {
+    "Python": {
+      "language_servers": ["basedpyright", "!pyright", "ruff"],
+      "format_on_save": "off",
+      "formatter": [
+        {
+          "code_actions": {
+            "source.organizeImports.ruff": true,
+            "source.fixAll.ruff": true
+          }
+        },
+        {
+          "language_server": {
+            "name": "ruff"
+          }
+        }
+      ]
+    }
+  },
+  "lsp": {
+    "basedpyright": {
+      "settings": {
+        "python": {
+          "venvPath": ".pixi/envs",
+          "venv": "default"
+        }
+      }
+    }
+  },
+  "ui_font_size": 16,
+  "buffer_font_size": 16,
+  "theme": {
+    "mode": "dark",
+    "light": "One Light",
+    "dark": "One Dark"
+  },
+  "telemetry": {
+    "diagnostics": true,
+    "metrics": true
+  },
+  "terminal": {
+    "copy_on_select": true,
+    "detect_venv": { "on": { "activate_script": "fish" } }
+  },
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.classpath",
+    "**/.settings",
+    "**/.pixi",
+    "**/.ropeproject",
+    "**/.ruff_cache",
+    "**/__pycache__",
+    "**/.venv",
+    "**/.ipynb_checkpoints",
+    "**/*.egg-info"
+  ],
+  "show_completions_on_input": true
+}

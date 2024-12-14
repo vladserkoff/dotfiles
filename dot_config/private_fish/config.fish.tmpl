@@ -1,0 +1,20 @@
+if status is-interactive
+    # Commands to run in interactive sessions can go here
+end
+
+set fish_greeting ""
+
+eval "$({{ .homebrew_prefix }}/brew shellenv)"
+
+abbr -a -g l ls -laGh
+
+direnv hook fish | source
+
+pixi completion --shell fish | source
+
+set -gx HOMEBREW_NO_ENV_HINTS 1
+
+alias g='git'
+alias gc='git commit'
+alias gp='git push'
+alias gs='git status'

@@ -1,0 +1,45 @@
+packages:
+  darwin:
+    taps:
+      - "buo/cask-upgrade"
+      - "homebrew/bundle"
+      - "homebrew/services"
+    brews:
+      - "basedpyright"
+      - "chezmoi"
+      - "curl"
+      - "direnv"
+      - "fish"
+      - "fisher"
+      - "gh"
+      - "git"
+      - "htop"
+      - "httpie"
+      - "mas"
+      - "micro"
+      - "nvtop"
+      - "pixi"
+      - "pre-commit"
+      - "ssh-copy-id"
+      - "watch"
+      - "wget"
+    casks:
+      - "appcleaner"
+      - "brave-browser"
+      - "coconutbattery"
+      - "handbrake"
+      # - "mactex-no-gui" # painfully slow installation
+      - "obsidian"
+      - "protonmail-bridge"
+      - "protonvpn"
+      - "sidequest"
+      - "spotify"
+      - "tailscale"
+      - "the-unarchiver"
+      - "transmission"
+      - "zed"
+    mas:
+      - name: "Telegram"
+        id: "747648890"
+    fisher:
+      - "jorgebucaran/hydro"

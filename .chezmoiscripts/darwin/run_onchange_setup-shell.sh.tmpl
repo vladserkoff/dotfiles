@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -ex
+
+# Check if fish is the default shell
+if [ "$SHELL" != "{{ .homebrew_prefix }}/fish" ]; then
+    echo "> Using fish shell"
+    echo {{ .homebrew_prefix }}/fish | sudo tee -a /etc/shells
+    chsh -s {{ .homebrew_prefix }}/fish
+fi
