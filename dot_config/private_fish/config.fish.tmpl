@@ -4,16 +4,22 @@ end
 
 set fish_greeting ""
 
-eval "$({{ .homebrew_prefix }}/brew shellenv)"
+if type -q brew
+    set -gx HOMEBREW_NO_ENV_HINTS 1
+    eval "$({{ .homebrew_prefix }}/brew shellenv)"
+end
+
+if type -q direnv
+    direnv hook fish | source
+end
+if type -q pixi
+    pixi completion --shell fish | source
+end
+if type -q mise
+    mise activate fish | source
+end
 
 abbr -a -g l ls -laGh
-
-direnv hook fish | source
-
-pixi completion --shell fish | source
-
-set -gx HOMEBREW_NO_ENV_HINTS 1
-
 alias g='git'
 alias gc='git commit'
 alias gp='git push'
