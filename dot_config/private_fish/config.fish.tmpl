@@ -12,6 +12,9 @@ end
 if type -q direnv
     direnv hook fish | source
 end
+if type -q docker
+    docker completion fish | source
+end
 if type -q pixi
     pixi completion --shell fish | source
 end

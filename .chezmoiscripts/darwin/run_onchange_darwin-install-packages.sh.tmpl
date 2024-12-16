@@ -5,14 +5,39 @@ cat > $HOME/.Brewfile <<EOF
 {{ range .packages.darwin.taps -}}
 tap {{ . | quote | replace " " "\", \"" }}
 {{ end -}}
-{{ range .packages.darwin.brews -}}
+
+{{ range .packages.darwin.brews.universal -}}
 brew {{ . | quote }}
 {{ end -}}
-{{ range .packages.darwin.casks -}}
+{{ range .packages.darwin.casks.universal -}}
 cask {{ . | quote }}
 {{ end -}}
-{{ range .packages.darwin.mas -}}
-mas {{ .name | quote }}, id: {{ .id }}
+{{ range .packages.darwin.mas.universal -}}
+mas {{ . | quote }}
+{{ end -}}
+
+{{ if eq .is_work false }}
+{{ range .packages.darwin.brews.personal -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.darwin.casks.personal -}}
+cask {{ . | quote }}
+{{ end -}}
+{{ range .packages.darwin.mas.personal -}}
+mas {{ . | quote }}
+{{ end -}}
+{{ end -}}
+
+{{ if eq .is_work true }}
+{{ range .packages.darwin.brews.work -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.darwin.casks.work -}}
+cask {{ . | quote }}
+{{ end -}}
+{{ range .packages.darwin.mas.work -}}
+mas {{ . | quote }}
+{{ end -}}
 {{ end -}}
 EOF
 brew bundle --no-lock --global

@@ -1,3 +1,6 @@
+{{- $email := promptStringOnce . "email" "E-mail" "9671366+vladserkoff@users.noreply.github.com" -}}
+{{- $is_work := promptBoolOnce . "is_work" "Is it a work machine?" false -}}
+
 {{- $arm := false }} {{/* are we running on intel or arm processor? */}}
 {{- $homebrew_prefix := "/usr/local/bin" }} {{/* homebrew prefix on intel macs */}}
 
@@ -10,8 +13,9 @@
 
 [data]
     name = "Vladislav"
-    email = "9671366+vladserkoff@users.noreply.github.com"
-    arm = "{{ $arm }}"
+    email = {{ $email | quote }}
+    is_work = {{ $is_work }}
+    arm = {{ $arm }}
     homebrew_prefix = "{{ $homebrew_prefix }}"
 
 [edit]

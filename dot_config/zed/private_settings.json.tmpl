@@ -16,7 +16,7 @@
   },
   "languages": {
     "Python": {
-      "language_servers": ["basedpyright", "!pyright", "ruff"],
+      "language_servers": ["pyright", "ruff"],
       "format_on_save": "off",
       "formatter": [
         {
@@ -34,11 +34,11 @@
     }
   },
   "lsp": {
-    "basedpyright": {
+    "pyright": {
       "settings": {
         "python": {
           "venvPath": ".pixi/envs",
-          "venv": "default"
+          "venv": "default",
         }
       }
     }
@@ -51,12 +51,12 @@
     "dark": "One Dark"
   },
   "telemetry": {
-    "diagnostics": true,
-    "metrics": true
+    "diagnostics": {{ not .is_work }},
+    "metrics": {{ not .is_work }}
   },
   "terminal": {
     "copy_on_select": true,
-    "detect_venv": { "on": { "activate_script": "fish" } }
+    "detect_venv": "off"
   },
   "file_scan_exclusions": [
     "**/.git",
