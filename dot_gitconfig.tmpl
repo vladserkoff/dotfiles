@@ -5,6 +5,7 @@
 	editor = micro
 [pull]
 	rebase = true
+	ff = only
 [init]
 	defaultBranch = main
 [color]
@@ -17,3 +18,5 @@
 	required = true
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
+[rerere]
+        enabled = true
