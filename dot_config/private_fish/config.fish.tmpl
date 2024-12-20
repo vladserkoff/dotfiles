@@ -21,9 +21,16 @@ end
 if type -q mise
     mise activate fish | source
 end
+if type -q rustup
+    rustup completions fish | source
+    if not type -q cargo
+        source "$HOME/.cargo/env.fish"
+    end
+end
 
 abbr -a -g l ls -laGh
 alias g='git'
 alias gc='git commit'
 alias gp='git push'
 alias gs='git status'
+alias cha='chezmoi init -va'

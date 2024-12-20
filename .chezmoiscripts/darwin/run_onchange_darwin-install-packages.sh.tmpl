@@ -24,7 +24,7 @@ brew {{ . | quote }}
 cask {{ . | quote }}
 {{ end -}}
 {{ range .packages.darwin.mas.personal -}}
-mas {{ . | quote }}
+mas {{ .name | quote }}, id: {{ .id }}
 {{ end -}}
 {{ end -}}
 
