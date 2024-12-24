@@ -8,6 +8,7 @@ packages:
       universal:
         - "chezmoi"
         - "curl"
+        - "delta"
         - "direnv"
         - "fish"
         - "fisher"
@@ -23,6 +24,7 @@ packages:
         - "pixi"
         - "pre-commit"
         - "ssh-copy-id"
+        - "uv"
         - "watch"
         - "wget"
       personal:
@@ -55,4 +57,5 @@ packages:
           id: "747648890"
       work:
     fisher:
+      - "ainmosni/fish-aws"
       - "jorgebucaran/hydro"

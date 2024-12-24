@@ -1,22 +1,24 @@
 {{- $email := promptStringOnce . "email" "E-mail" "9671366+vladserkoff@users.noreply.github.com" -}}
 {{- $is_work := promptBoolOnce . "is_work" "Is it a work machine?" false -}}
+{{- $aws_profile := promptStringOnce . "aws_profile" "Default AWS profile:" "" -}}
 
 {{- $arm := false }} {{/* are we running on intel or arm processor? */}}
 {{- $homebrew_prefix := "/usr/local/bin" }} {{/* homebrew prefix on intel macs */}}
 
 {{- if eq .chezmoi.os "darwin" -}}
-{{-   if contains "arm" (output "uname" "-p" | trim) -}}
-{{-     $arm = true -}}
-{{-     $homebrew_prefix = "/opt/homebrew/bin" -}}
-{{-   end -}}
+    {{- if contains "arm" (output "uname" "-p" | trim) -}}
+        {{- $arm = true -}}
+        {{- $homebrew_prefix = "/opt/homebrew/bin" -}}
+    {{- end -}}
 {{- end -}}
 
 [data]
     name = "Vladislav"
-    email = {{ $email | quote }}
-    is_work = {{ $is_work }}
-    arm = {{ $arm }}
-    homebrew_prefix = "{{ $homebrew_prefix }}"
+    email = {{ .email | quote }}
+    is_work = {{ .is_work }}
+    arm = {{ .arm }}
+    homebrew_prefix = {{ $homebrew_prefix | quote }}
+    aws_profile = {{ $aws_profile | quote }}
 
 [edit]
     command = "zed"
