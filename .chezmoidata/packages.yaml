@@ -17,6 +17,7 @@ packages:
         - "htop"
         - "httpie"
         - "lazygit" # consider gitui
+        - "marp-cli"
         - "mas"
         - "micro"
         - "ncdu"
@@ -31,6 +32,7 @@ packages:
         - "rustup"
       work:
         - "awscli"
+        - "docker-credential-helper-ecr"
     casks:
       universal:
         - "obsidian"
