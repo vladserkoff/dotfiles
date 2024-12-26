@@ -14,9 +14,9 @@
 
 [data]
     name = "Vladislav"
-    email = {{ .email | quote }}
-    is_work = {{ .is_work }}
-    arm = {{ .arm }}
+    email = {{ $email | quote }}
+    is_work = {{ $is_work }}
+    arm = {{ $arm }}
     homebrew_prefix = {{ $homebrew_prefix | quote }}
     aws_profile = {{ $aws_profile | quote }}
 

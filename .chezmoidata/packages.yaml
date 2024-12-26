@@ -29,6 +29,7 @@ packages:
         - "watch"
         - "wget"
       personal:
+        - "ansible"
         - "rustup"
       work:
         - "awscli"

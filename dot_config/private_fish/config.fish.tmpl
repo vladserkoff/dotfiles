@@ -6,7 +6,7 @@ set fish_greeting ""
 
 if type -q brew
     set -gx HOMEBREW_NO_ENV_HINTS 1
-    eval "$({{ .homebrew_prefix }}/brew shellenv)"
+    {{ .homebrew_prefix }}/brew shellenv | source
 end
 
 if type -q direnv
