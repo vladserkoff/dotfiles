@@ -4,6 +4,10 @@ end
 
 set fish_greeting ""
 
+{{ if eq .chezmoi.os "linux" -}}
+fish_add_path /home/{{ .chezmoi.username }}/.pixi/bin
+{{ end }}
+
 if type -q brew
     set -gx HOMEBREW_NO_ENV_HINTS 1
     {{ .homebrew_prefix }}/brew shellenv | source

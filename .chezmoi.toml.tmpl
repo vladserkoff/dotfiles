@@ -2,21 +2,16 @@
 {{- $is_work := promptBoolOnce . "is_work" "Is it a work machine?" false -}}
 {{- $aws_profile := promptStringOnce . "aws_profile" "Default AWS profile:" "" -}}
 
-{{- $arm := false }} {{/* are we running on intel or arm processor? */}}
-{{- $homebrew_prefix := "/usr/local/bin" }} {{/* homebrew prefix on intel macs */}}
-
-{{- if eq .chezmoi.os "darwin" -}}
-    {{- if contains "arm" (output "uname" "-p" | trim) -}}
-        {{- $arm = true -}}
-        {{- $homebrew_prefix = "/opt/homebrew/bin" -}}
-    {{- end -}}
+{{/* homebrew prefix on intel and arm macs is different */}}
+{{- $homebrew_prefix := "/opt/homebrew/bin" -}}
+{{- if (and (eq .chezmoi.os "darwin") (eq .chezmoi.arch "amd64")) -}}
+    {{- $homebrew_prefix = "/usr/local/bin" }}
 {{- end -}}
 
 [data]
     name = "Vladislav"
     email = {{ $email | quote }}
     is_work = {{ $is_work }}
-    arm = {{ $arm }}
     homebrew_prefix = {{ $homebrew_prefix | quote }}
     aws_profile = {{ $aws_profile | quote }}
 
