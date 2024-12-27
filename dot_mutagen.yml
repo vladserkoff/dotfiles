@@ -1,0 +1,22 @@
+sync:
+  defaults:
+    mode: "one-way-replica"
+    ignore:
+      paths:
+        - "*.egg-info"
+        - "*.pyc"
+        - ".DS_Store"
+        - ".classpath"
+        - ".fact_cache"
+        - ".ipynb_checkpoints"
+        - ".pixi"
+        - ".ropeproject"
+        - ".ruff_cache"
+        - ".settings"
+        - ".venv"
+        - "Thumbs.db"
+        - "__pycache__"
+      vcs: true
+    permissions:
+      defaultFileMode: 0644
+      defaultDirectoryMode: 0755

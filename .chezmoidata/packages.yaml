@@ -30,6 +30,7 @@ packages:
         - "wget"
       personal:
         - "ansible"
+        - "mutagen-io/mutagen/mutagen"
         - "rustup"
       work:
         - "awscli"
