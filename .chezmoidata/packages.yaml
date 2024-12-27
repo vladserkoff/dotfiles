@@ -36,12 +36,14 @@ packages:
         - "docker-credential-helper-ecr"
     casks:
       universal:
+        - "iterm2"
         - "obsidian"
         - "spotify"
         - "zed"
       personal:
         - "appcleaner"
         - "brave-browser"
+        - "claude"
         - "coconutbattery"
         - "handbrake"
         # - "mactex-no-gui" # painfully slow installation
