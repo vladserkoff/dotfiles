@@ -1,6 +1,6 @@
 sync:
   defaults:
-    mode: "one-way-replica"
+    mode: "two-way-safe"
     ignore:
       paths:
         - "*.egg-info"

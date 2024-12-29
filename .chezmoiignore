@@ -1,5 +1,0 @@
-{{ if ne .chezmoi.os "darwin" }}
-~/Library/Application Support/lazygit/config.yaml
-~/Library/Application Support/iTerm2/DynamicProfiles/profile.json
-~/.mutagen.yml
-{{ end }}

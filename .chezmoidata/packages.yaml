@@ -46,6 +46,7 @@ packages:
         - "brave-browser"
         - "claude"
         - "coconutbattery"
+        - "fanny"
         - "handbrake"
         # - "mactex-no-gui" # painfully slow installation
         - "protonmail-bridge"
