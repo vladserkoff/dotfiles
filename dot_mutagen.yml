@@ -1,6 +1,6 @@
 sync:
   defaults:
-    mode: "two-way-safe"
+    mode: "two-way-resolved"
     ignore:
       paths:
         - "*.egg-info"
