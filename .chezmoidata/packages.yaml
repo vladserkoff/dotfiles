@@ -37,7 +37,8 @@ packages:
         - "docker-credential-helper-ecr"
     casks:
       universal:
-        - "iterm2"
+        - "font-ibm-plex-mono"
+        - "ghostty"
         - "obsidian"
         - "spotify"
         - "zed"
@@ -66,3 +67,4 @@ packages:
     fisher:
       - "ainmosni/fish-aws"
       - "jorgebucaran/hydro"
+      - "PatrickF1/fzf.fish"

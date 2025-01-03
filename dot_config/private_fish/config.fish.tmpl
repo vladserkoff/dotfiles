@@ -20,7 +20,7 @@ end
 if type -q mise
     mise activate fish | source
 end
-if not type -q cargo
+if type -q cargo
     source "$HOME/.cargo/env.fish"
 end
 
@@ -31,4 +31,5 @@ alias gp='git push'
 alias gs='git status'
 alias cha='chezmoi init -va'
 alias chc='chezmoi cd'
+alias chu='chezmoi update'
 set -gx AWS_PROFILE {{ .aws_profile }}

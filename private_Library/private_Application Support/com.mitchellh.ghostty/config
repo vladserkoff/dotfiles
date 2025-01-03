@@ -1,0 +1,8 @@
+font-family = IBM Plex Mono
+font-size = 18
+font-style = Text
+
+copy-on-select = true
+window-height = 40
+window-width = 130
+confirm-close-surface = false

@@ -1,22 +1,38 @@
 [user]
     name = "{{ .name }}"
     email = "{{ .email }}"
+
 [core]
 	editor = micro
+    pager = delta
+    autocrlf = input
+    excludesfile = ~/.gitignore_global
+
 [pull]
 	rebase = true
 	ff = only
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
+
+[merge]
+    conflictstyle = zdiff3
+
 [init]
 	defaultBranch = main
+
 [color]
     ui = auto
-[core]
-    autocrlf = input
-    excludesfile = ~/.gitignore_global
+
 [filter "lfs"]
     process = git-lfs filter-process
 	required = true
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
+
 [rerere]
         enabled = true
