@@ -24,7 +24,10 @@ packages:
         - "nvtop"
         - "pixi"
         - "pre-commit"
+        - "rainfrog"
         - "ssh-copy-id"
+        - "tmux"
+        - "tpm"
         - "uv"
         - "watch"
         - "wget"
@@ -34,6 +37,7 @@ packages:
         - "rustup"
       work:
         - "awscli"
+        - "csvlens"
         - "docker-credential-helper-ecr"
     casks:
       universal:
