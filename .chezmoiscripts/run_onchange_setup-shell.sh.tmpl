@@ -4,9 +4,9 @@ set -ex
 
 # Check if fish is the default shell
 {{- if eq .chezmoi.os "darwin" }}
-if [ "$SHELL" != "{{ .homebrew_prefix }}/fish" ]; then
+if [ "$SHELL" != "{{ .homebrew_prefix }}/bin/fish" ]; then
     echo "> Using fish shell"
-    echo {{ .homebrew_prefix }}/fish | sudo tee -a /etc/shells
-    chsh -s {{ .homebrew_prefix }}/fish
+    echo {{ .homebrew_prefix }}/bin/fish | sudo tee -a /etc/shells
+    chsh -s {{ .homebrew_prefix }}/bin/fish
 fi
 {{ end }}

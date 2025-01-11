@@ -11,7 +11,7 @@ fish_add_path /home/{{ .chezmoi.username }}/.local/bin
 
 if type -q brew
     set -gx HOMEBREW_NO_ENV_HINTS 1
-    {{ .homebrew_prefix }}/brew shellenv | source
+    {{ .homebrew_prefix }}/bin/brew shellenv | source
 end
 
 if type -q direnv
@@ -33,3 +33,5 @@ alias cha='chezmoi init -va'
 alias chc='chezmoi cd'
 alias chu='chezmoi update'
 set -gx AWS_PROFILE {{ .aws_profile }}
+
+alias gitingest='uvx gitingest -e digest.txt'
