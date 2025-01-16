@@ -9,4 +9,8 @@ set -g @plugin 'noscript/tmux-mighty-scroll'
 set -g @plugin 'AngryMorrocoy/tmux-neolazygit'
 set -g @plugin 'tmux-plugins/tmux-sidebar'
 
+{{ if eq .chezmoi.os "darwin" }}
 run '{{ .homebrew_prefix }}/opt/tpm/share/tpm/tpm'
+{{ else }}
+run '~/.tmux/plugins/tpm/tpm'
+{{ end }}
