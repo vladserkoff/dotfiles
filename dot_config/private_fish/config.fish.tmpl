@@ -34,4 +34,4 @@ alias chc='chezmoi cd'
 alias chu='chezmoi update'
 set -gx AWS_PROFILE {{ .aws_profile }}
 
-alias gitingest='uvx gitingest -e digest.txt -e pixi.lock -e .pixi -e .venv -e .env -e "**/.DS_Store"'
+alias gitingest='uvx gitingest -e digest.txt -e .gitignore -e "*.lock" -e .pixi -e .venv -e .env -e "**/.DS_Store"'

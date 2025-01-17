@@ -6,6 +6,7 @@ packages:
       - "homebrew/services"
     brews:
       universal:
+        - "bat"
         - "chezmoi"
         - "curl"
         - "delta"
