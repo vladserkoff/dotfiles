@@ -14,3 +14,5 @@ run '{{ .homebrew_prefix }}/opt/tpm/share/tpm/tpm'
 {{ else }}
 run '~/.tmux/plugins/tpm/tpm'
 {{ end }}
+
+set -g @continuum-restore 'on'
