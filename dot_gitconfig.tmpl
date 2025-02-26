@@ -1,38 +1,72 @@
-[user]
-    name = "{{ .name }}"
-    email = "{{ .email }}"
-
-[core]
-	editor = micro
-    pager = delta
-    autocrlf = input
-    excludesfile = ~/.gitignore_global
-
-[pull]
-	rebase = true
-	ff = only
-
-[interactive]
-    diffFilter = delta --color-only
-
-[delta]
-    navigate = true  # use n and N to move between diff sections
-    dark = true      # or light = true, or omit for auto-detection
-
-[merge]
-    conflictstyle = zdiff3
-
-[init]
-	defaultBranch = main
+[branch]
+    sort = -committerdate
 
 [color]
     ui = auto
 
+[column]
+    ui = auto
+
+[core]
+	editor = micro
+	fsmonitor = true
+    autocrlf = input
+    excludesfile = ~/.gitignore_global
+    pager = delta
+
+[diff]
+    algorithm = histogram
+    colorMoved = plain
+    mnemonicPrefix = true
+    renames = true
+
+[delta]
+    navigate = true
+
+[fetch]
+    all = true
+    prune = true
+    pruneTags = true
+
 [filter "lfs"]
-    process = git-lfs filter-process
-	required = true
 	clean = git-lfs clean -- %f
+	required = true
 	smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+
+[help]
+    autocorrect = prompt
+
+[init]
+	defaultBranch = main
+
+[interactive]
+    diffFilter = delta --color-only
+
+[merge]
+    conflictstyle = zdiff3
+
+[pull]
+	ff = only
+	rebase = true
+
+[push]
+    autoSetupRemote = true
+    default = simple
+    followTags = true
+
+[rebase]
+    autoSquash = true
+    autoStash = true
+    updateRefs = true
 
 [rerere]
-        enabled = true
+    autoupdate = true
+    enabled = true
+
+[tag]
+    sort = version:refname
+
+[user]
+    email = "{{ .email }}"
+    name = "{{ .name }}"
