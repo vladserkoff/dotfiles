@@ -8,8 +8,8 @@
     ui = auto
 
 [core]
-	editor = micro
-	fsmonitor = true
+    editor = micro
+    fsmonitor = true
     autocrlf = input
     excludesfile = ~/.gitignore_global
     pager = delta
@@ -29,16 +29,16 @@
     pruneTags = true
 
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	required = true
-	smudge = git-lfs smudge -- %f
+    clean = git-lfs clean -- %f
+    required = true
+    smudge = git-lfs smudge -- %f
     process = git-lfs filter-process
 
 [help]
     autocorrect = prompt
 
 [init]
-	defaultBranch = main
+    defaultBranch = main
 
 [interactive]
     diffFilter = delta --color-only
@@ -47,8 +47,8 @@
     conflictstyle = zdiff3
 
 [pull]
-	ff = only
-	rebase = true
+    ff = only
+    rebase = true
 
 [push]
     autoSetupRemote = true
