@@ -7,29 +7,13 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  "features": {
-    "edit_prediction_provider": "zed"
-  },
-  "show_edit_predictions": false,
-  "assistant": {
-    "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-3-7-sonnet-latest"
-    },
-    "version": "2"
-  },
+  "disable_ai": true,
   "languages": {
     "Python": {
       "show_edit_predictions": true,
       "language_servers": ["pyright", "ruff"],
       "format_on_save": "off",
       "formatter": [
-        {
-          "code_actions": {
-            "source.organizeImports.ruff": true,
-            "source.fixAll.ruff": true
-          }
-        },
         {
           "language_server": {
             "name": "ruff"
@@ -60,6 +44,7 @@
     "**/.git",
     "**/.svn",
     "**/.hg",
+    "**/.jj",
     "**/CVS",
     "**/.DS_Store",
     "**/Thumbs.db",
@@ -83,6 +68,5 @@
     "ruff": true,
     "sql": true,
     "toml": true
-  },
-  "show_completions_on_input": true
+  }
 }

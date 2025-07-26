@@ -24,16 +24,20 @@ if type -q cargo
     source "$HOME/.cargo/env.fish"
 end
 
+{{ if eq .chezmoi.os "linux" -}}
+fish_add_path /home/{{ .chezmoi.username }}/.claude/local
+{{ else }}
+fish_add_path /Users/{{ .chezmoi.username }}/.claude/local
+{{ end }}
+
 abbr -a -g l ls -laGh
-alias g='git'
-alias gc='git commit'
-alias gp='git push'
-alias gs='git status'
-alias cha='chezmoi init -va'
-alias chc='chezmoi cd'
-alias chu='chezmoi update'
+abbr -a -g g git
+abbr -a -g gc git commit
+abbr -a -g gp git push
+abbr -a -g gs git status
+abbr -a -g cha chezmoi init -va
+abbr -a -g chc chezmoi cd
+abbr -a -g chu chezmoi update
 set -gx AWS_PROFILE {{ .aws_profile }}
 
-alias jup='uvx --with ipywidgets --with jupyterlab_widgets --from jupyterlab@latest jupyter-lab --no-browser'
-
-alias gitingest='uvx gitingest -e digest.txt -e .gitignore -e "*.lock" -e .pixi -e .venv -e .env -e "**/.DS_Store"'
+abbr -a -g jup uvx --with ipywidgets --with jupyterlab_widgets --from jupyterlab@latest jupyter-lab --no-browser
