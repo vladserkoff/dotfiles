@@ -1,30 +1,24 @@
 packages:
   darwin:
-    taps:
-      - "buo/cask-upgrade"
-      - "homebrew/bundle"
-      - "homebrew/services"
     brews:
       universal:
         - "bat"
         - "chezmoi"
         - "curl"
-        - "delta"
         - "direnv"
         - "fish"
         - "fisher"
         - "gh"
         - "git"
+        - "git-delta"
+        - "git-lfs"
         - "htop"
         - "httpie"
-        - "lazygit" # consider gitui
-        - "marp-cli"
+        - "lazygit"
         - "mas"
         - "micro"
-        - "ncdu"
         - "nvtop"
         - "pixi"
-        - "pre-commit"
         - "rainfrog"
         - "ssh-copy-id"
         - "tmux"
@@ -35,13 +29,16 @@ packages:
       personal:
         - "ansible"
         - "mutagen-io/mutagen/mutagen"
-        - "rustup"
+        - "ripgrep"
+        - "tailwindcss"
+        - "wakeonlan"
       work:
         - "awscli"
         - "csvlens"
         - "docker-credential-helper-ecr"
     casks:
       universal:
+        - "docker-desktop"
         - "font-ibm-plex-mono"
         - "ghostty"
         - "obsidian"
@@ -49,16 +46,18 @@ packages:
         - "zed"
       personal:
         - "appcleaner"
+        - "beeper"
         - "brave-browser"
         - "claude"
         - "coconutbattery"
         - "fanny"
-        - "handbrake"
+        - "handbrake-app"
+        - "logi-options+"
         # - "mactex-no-gui" # painfully slow installation
-        - "protonmail-bridge"
+        - "progressive-downloader"
         - "protonvpn"
         - "sidequest"
-        - "tailscale"
+        - "tailscale-app"
         - "the-unarchiver"
         - "transmission"
       work:

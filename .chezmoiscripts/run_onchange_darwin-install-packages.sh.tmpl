@@ -2,10 +2,6 @@
 #!/bin/bash
 
 cat > $HOME/.Brewfile <<EOF
-{{ range .packages.darwin.taps -}}
-tap {{ . | quote | replace " " "\", \"" }}
-{{ end -}}
-
 {{ range .packages.darwin.brews.universal -}}
 brew {{ . | quote }}
 {{ end -}}
@@ -40,7 +36,7 @@ mas {{ . | quote }}
 {{ end -}}
 {{ end -}}
 EOF
-brew bundle --no-lock --global
+brew bundle --global
 
 {{ if eq (default "0" (env "BUNDLE_CLEANUP")) "1" }}
 brew bundle cleanup --global --force
