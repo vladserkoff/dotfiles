@@ -7,11 +7,22 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  "disable_ai": true,
+  "edit_predictions": {
+    "mode": "subtle",
+    "copilot": {
+      "proxy": null,
+      "proxy_no_verify": null,
+      "enterprise_uri": null
+    },
+    "enabled_in_text_threads": false
+  },
+  "show_edit_predictions": false,
+  "disable_ai": false,
+  "format_on_save": "off",
   "languages": {
     "Python": {
-      "show_edit_predictions": true,
-      "language_servers": ["pyright", "ruff"],
+      "show_edit_predictions": false,
+      "language_servers": ["basedpyright", "ruff"],
       "format_on_save": "off",
       "formatter": [
         {
@@ -37,8 +48,7 @@
     "metrics": {{ not .is_work }}
   },
   "terminal": {
-    "copy_on_select": true,
-    "detect_venv": "off"
+    "copy_on_select": true
   },
   "file_scan_exclusions": [
     "**/.git",
