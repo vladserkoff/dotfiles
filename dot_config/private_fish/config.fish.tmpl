@@ -31,7 +31,6 @@ fish_add_path /Users/{{ .chezmoi.username }}/.claude/local
 {{ end }}
 
 abbr -a -g l ls -laGh
-abbr -a -g g git
 abbr -a -g gc git commit
 abbr -a -g gp git push
 abbr -a -g gs git status
@@ -44,3 +43,4 @@ abbr -a -g jup uvx --with ipywidgets --with jupyterlab_widgets --from jupyterlab
 abbr -a -g tmpl-init uvx copier copy gh:vladserkoff/python-uv-template
 abbr -a -g ghpc gh pr create --fill-verbose --assignee @me
 abbr -a -g ghpm gh pr merge --squash --delete-branch
+abbr -a -g bu brew update && brew upgrade && brew cleanup
