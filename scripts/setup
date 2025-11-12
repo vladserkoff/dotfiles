@@ -2,7 +2,7 @@
 
 set -ex
 
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/MikeMcQuaid/strap/HEAD/strap.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/MikeMcQuaid/strap/bd8c230a20c4f674efaacc9c250e1328092f1258/bin/strap.sh)"
 
 # link .ssh from icloud
 if [ -e /Users/$USER/.ssh ]; then
