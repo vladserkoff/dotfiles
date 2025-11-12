@@ -2,9 +2,6 @@ function generate_completions
     if type -q docker
         docker completion fish > ~/.config/fish/completions/docker.fish
     end
-    if type -q pixi
-        pixi completion --shell fish > ~/.config/fish/completions/pixi.fish
-    end
     if type -q uv
         uv --generate-shell-completion fish > ~/.config/fish/completions/uv.fish
     end

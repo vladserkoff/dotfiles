@@ -5,7 +5,6 @@ end
 set fish_greeting ""
 
 {{ if eq .chezmoi.os "linux" -}}
-fish_add_path /home/{{ .chezmoi.username }}/.pixi/bin
 fish_add_path /home/{{ .chezmoi.username }}/.local/bin
 {{ end }}
 
