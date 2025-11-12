@@ -50,8 +50,8 @@ packages:
         - "brave-browser"
         - "claude"
         - "coconutbattery"
-        - "fanny"
         - "handbrake-app"
+        - "hot"
         - "logi-options+"
         # - "mactex-no-gui" # painfully slow installation
         - "protonvpn"
