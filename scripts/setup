@@ -11,6 +11,12 @@ else
     ln -s "/Users/$USER/Library/Mobile Documents/com~apple~CloudDocs/dev/.ssh" "/Users/$USER/.ssh"
 fi;
 
+if [[ "$(uname -m)" == "arm64" ]]; then
+  export PATH="/opt/homebrew/bin:$PATH"
+else
+  export PATH="/usr/local/bin:$PATH"
+fi
+
 brew install chezmoi
 chezmoi init vladserkoff
 chezmoi apply
