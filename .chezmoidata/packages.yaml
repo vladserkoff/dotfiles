@@ -58,6 +58,7 @@ packages:
         - "proton-mail"
         - "proton-pass"
         - "protonvpn"
+        - "sidequest"
         - "tailscale-app"
         - "the-unarchiver"
         - "transmission"
