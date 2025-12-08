@@ -3,6 +3,7 @@ packages:
     brews:
       universal:
         - "bat"
+        - "btop"
         - "chezmoi"
         - "curl"
         - "direnv"
@@ -12,7 +13,6 @@ packages:
         - "git"
         - "git-delta"
         - "git-lfs"
-        - "htop"
         - "httpie"
         - "lazygit"
         - "mas"
