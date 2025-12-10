@@ -28,7 +28,6 @@ packages:
         - "watch"
         - "wget"
       personal:
-        - "ansible"
         - "mutagen-io/mutagen/mutagen"
         - "tailwindcss"
         - "wakeonlan"
