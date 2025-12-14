@@ -28,6 +28,7 @@ packages:
         - "watch"
         - "wget"
       personal:
+        - "exiftool"
         - "mutagen-io/mutagen/mutagen"
         - "tailwindcss"
         - "wakeonlan"
@@ -45,6 +46,7 @@ packages:
         - "zed"
       personal:
         - "appcleaner"
+        - "balenaetcher"
         - "betterdisplay"
         - "brave-browser"
         - "claude"
