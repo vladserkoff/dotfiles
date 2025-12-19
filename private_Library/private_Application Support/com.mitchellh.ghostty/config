@@ -7,5 +7,3 @@ window-height = 40
 window-width = 130
 confirm-close-surface = false
 keybind = shift+enter=text:\n
-
-shell-integration-features = ssh-terminfo,ssh-env,sudo
