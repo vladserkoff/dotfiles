@@ -1,0 +1,15 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+set -euo pipefail
+
+# Reruns whenever the rendered ~/.Brewfile changes.
+# Brewfile hash: {{ includeTemplate "Brewfile" . | sha256sum }}
+
+brew bundle --global
+
+# Removing formulae is destructive, so it is opt-in per run rather than a
+# template-time toggle (which would otherwise churn this script's hash).
+if [ "${BUNDLE_CLEANUP:-0}" = "1" ]; then
+    brew bundle cleanup --global --force
+fi
+{{ end -}}

@@ -1,0 +1,21 @@
+{{ if and (eq .chezmoi.os "darwin") (not .is_work) -}}
+#!/bin/bash
+set -euo pipefail
+
+# Personal machines keep ~/.ssh in iCloud Drive. Never do this on a work
+# machine, and never leave a dangling symlink behind if iCloud has not synced.
+target="$HOME/Library/Mobile Documents/com~apple~CloudDocs/dev/.ssh"
+
+if [ -e "$HOME/.ssh" ] || [ -L "$HOME/.ssh" ]; then
+    exit 0
+fi
+
+if [ ! -d "$target" ]; then
+    echo "==> WARNING: $target not found; skipping ~/.ssh symlink." >&2
+    echo "==> Wait for iCloud to sync, then rerun: chezmoi state delete-bucket --bucket=scriptState && chezmoi apply" >&2
+    exit 0
+fi
+
+echo "==> Linking ~/.ssh to iCloud Drive"
+ln -s "$target" "$HOME/.ssh"
+{{ end -}}

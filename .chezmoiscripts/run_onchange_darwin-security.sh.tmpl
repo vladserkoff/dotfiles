@@ -1,0 +1,42 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+set -euo pipefail
+
+# Security settings previously inherited from strap, now owned here so they are
+# versioned and reviewable. Idempotent; safe to rerun.
+
+# --- TouchID for sudo ---------------------------------------------------------
+# Only the sudo_local path (macOS Sonoma and later) is handled: it survives OS
+# updates, and appending to /etc/pam.d/sudo directly is order-sensitive and
+# easy to get wrong.
+if ls /usr/lib/pam | grep -q pam_tid.so; then
+    if [ -f /etc/pam.d/sudo_local ] || [ -f /etc/pam.d/sudo_local.template ]; then
+        pam_file=/etc/pam.d/sudo_local
+        if [ ! -f "$pam_file" ]; then
+            echo "# sudo_local: local config file which survives system update and is included for sudo" \
+                | sudo tee "$pam_file" >/dev/null
+        fi
+        if ! grep -q pam_tid.so "$pam_file"; then
+            echo "==> Enabling TouchID for sudo"
+            echo "auth       sufficient     pam_tid.so" | sudo tee -a "$pam_file" >/dev/null
+        fi
+    else
+        echo "==> /etc/pam.d/sudo_local unavailable; skipping TouchID setup" >&2
+    fi
+fi
+
+# --- Application firewall -----------------------------------------------------
+firewall=/usr/libexec/ApplicationFirewall/socketfilterfw
+if [ -x "$firewall" ] && ! "$firewall" --getglobalstate | grep -q "enabled"; then
+    echo "==> Enabling the application firewall"
+    sudo "$firewall" --setglobalstate on >/dev/null
+fi
+
+# --- FileVault ----------------------------------------------------------------
+# Reported, never enforced: enabling it mid-bootstrap dumps a recovery key to
+# the Desktop and can block the rest of the run.
+if ! fdesetup status | grep -qE "FileVault is (On|Off, but will be enabled after the next restart)\."; then
+    echo "==> WARNING: FileVault is off. Enable it with:" >&2
+    echo "==>   sudo fdesetup enable -user \"$USER\"" >&2
+fi
+{{ end -}}

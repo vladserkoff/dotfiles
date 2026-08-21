@@ -5,6 +5,7 @@ packages:
         - "bat"
         - "btop"
         - "chezmoi"
+        - "coreutils"
         - "curl"
         - "direnv"
         - "fish"
@@ -20,6 +21,7 @@ packages:
         - "nvtop"
         - "ripgrep"
         - "rsync"
+        - "shellcheck"
         - "ssh-copy-id"
         - "tmux"
         - "tpm"
@@ -71,7 +73,7 @@ packages:
         - name: "Telegram"
           id: "747648890"
       work:
-    fisher:
-      - "ainmosni/fish-aws"
-      - "jorgebucaran/hydro"
-      - "PatrickF1/fzf.fish"
+  fisher:
+    - "ainmosni/fish-aws"
+    - "jorgebucaran/hydro"
+    - "PatrickF1/fzf.fish"

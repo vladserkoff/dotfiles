@@ -1,0 +1,65 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  render:
+    name: render templates (${{ matrix.os }}, is_work=${{ matrix.is_work }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        is_work: [true, false]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: sh -c "$(curl -fsSL https://get.chezmoi.io)" -- -b "$HOME/.local/bin"
+
+      - name: Initialise with non-interactive prompt answers
+        run: |
+          "$HOME/.local/bin/chezmoi" init \
+            --source="$PWD" \
+            --promptString "email=ci@example.com" \
+            --promptString "aws_profile=" \
+            --promptBool "is_work=${{ matrix.is_work }}"
+
+      - name: Verify every target renders and applies cleanly
+        run: "$HOME/.local/bin/chezmoi" apply --dry-run --verbose
+
+      - name: Verify the generated Brewfile parses
+        if: runner.os == 'macOS'
+        run: |
+          "$HOME/.local/bin/chezmoi" cat ~/.Brewfile > /tmp/Brewfile
+          cat /tmp/Brewfile
+          brew bundle list --file=/tmp/Brewfile >/dev/null
+
+  lint:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: sh -c "$(curl -fsSL https://get.chezmoi.io)" -- -b "$HOME/.local/bin"
+
+      - name: Render scripts and lint them
+        run: |
+          "$HOME/.local/bin/chezmoi" init \
+            --source="$PWD" \
+            --promptString "email=ci@example.com" \
+            --promptString "aws_profile=" \
+            --promptBool "is_work=false"
+          mkdir -p /tmp/rendered
+          for f in .chezmoiscripts/*.tmpl; do
+            out="/tmp/rendered/$(basename "${f%.tmpl}")"
+            "$HOME/.local/bin/chezmoi" execute-template < "$f" > "$out"
+            # Templates guarded on a non-matching OS render empty; skip those.
+            [ -s "$out" ] || rm -f "$out"
+          done
+          shellcheck --severity=warning /tmp/rendered/*.sh scripts/setup
