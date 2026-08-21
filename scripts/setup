@@ -8,7 +8,13 @@
 # chezmoi afterwards, so it is versioned and reviewable rather than hidden
 # inside this script.
 #
-#   curl -fsSL https://raw.githubusercontent.com/vladserkoff/dotfiles/HEAD/scripts/setup | bash
+# Must run with a terminal on stdin, so use the command-substitution form:
+#
+#   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/vladserkoff/dotfiles/HEAD/scripts/setup)"
+#
+# Piping into bash (`curl ... | bash`) puts the script itself on stdin, and
+# chezmoi's promptString then silently returns every default instead of asking
+# — which would provision a work machine as a personal one.
 #
 set -euo pipefail
 
@@ -23,6 +29,14 @@ abort() { printf '\n!!! %s\n' "$*" >&2; exit 1; }
 [ "$(uname -s)" = "Darwin" ] || abort "This bootstrap is macOS-only."
 [ "$(id -u)" -ne 0 ] || abort "Run this as yourself, not root."
 groups | grep -qE '\b(admin)\b' || abort "$USER must be in the admin group."
+
+# chezmoi's prompts fall back to their defaults when stdin is not a terminal,
+# so `curl ... | bash` would silently answer is_work=false. Fail loudly instead.
+if [ ! -t 0 ]; then
+    abort "stdin is not a terminal, so chezmoi would accept every default (including is_work=false).
+    Rerun as:
+      /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/$GITHUB_USER/dotfiles/HEAD/scripts/setup)\""
+fi
 
 # Keep the machine awake for the duration.
 caffeinate -s -w $$ &

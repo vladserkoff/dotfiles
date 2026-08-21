@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repository is
 
-This is a **chezmoi source directory** (`~/.local/share/chezmoi`) for bootstrapping and maintaining a macOS machine. There is no build, no tests, and no application code — every file here is either a *source* for a dotfile in `$HOME`, machine-provisioning data, or a script chezmoi runs during `apply`.
+This is a **chezmoi source directory** (`~/.local/share/chezmoi`) for bootstrapping and maintaining macOS machines (personal and work, split by `is_work`) and, secondarily, Linux machines for shell/CLI config only. There is no application code — every file here is either a *source* for a dotfile in `$HOME`, machine-provisioning data, or a script chezmoi runs during `apply`. The only automated verification is the CI workflow described below.
 
 Editing a file here changes nothing on the machine until `chezmoi apply` runs.
 
@@ -12,7 +12,8 @@ Editing a file here changes nothing on the machine until `chezmoi apply` runs.
 
 ```shell
 chezmoi diff                  # preview what apply would change in $HOME
-chezmoi apply -v              # apply (add --dry-run to rehearse)
+chezmoi apply -v              # apply; `apply --dry-run -v` rehearses
+                              # (--dry-run without -v prints nothing at all)
 chezmoi init -va              # re-prompt for config data + apply (fish abbr: cha)
 chezmoi cd                    # cd into this directory (abbr: chc)
 chezmoi update                # git pull + apply (abbr: chu)
@@ -23,7 +24,7 @@ chezmoi add ~/.some/file      # import an existing dotfile into the source tree
 
 Never hand-edit files in `$HOME` that chezmoi manages — edit the source here, then `apply`. Use `chezmoi add` to pull in an outside change.
 
-Bootstrapping a fresh Mac is `scripts/setup` — Xcode CLT → Homebrew → chezmoi → `chezmoi init --apply`, and nothing else. It is invoked via the curl one-liner in `readme.md` and is deliberately excluded from both `apply` (`.chezmoiignore.tmpl`) and `chezmoi diff` (`[diff] exclude` in `.chezmoi.toml.tmpl`). Anything that could live in a chezmoi script belongs in `.chezmoiscripts/`, not here — the bootstrap is intentionally the smallest thing that can run before chezmoi exists.
+Bootstrapping a fresh Mac is `scripts/setup` — Xcode CLT → Homebrew → chezmoi → `chezmoi init --apply`, and nothing else. **It must be run with a terminal on stdin** (`/bin/bash -c "$(curl -fsSL …)"`, never `curl … | bash`): chezmoi's `promptString` silently returns its *default* when stdin is not a tty, so piping would answer `is_work=false` and provision a work machine as a personal one. The script hard-fails on `[ ! -t 0 ]` to make that impossible. It is invoked via the curl one-liner in `readme.md` and is deliberately excluded from both `apply` (`.chezmoiignore.tmpl`) and `chezmoi diff` (`[diff] exclude` in `.chezmoi.toml.tmpl`). Anything that could live in a chezmoi script belongs in `.chezmoiscripts/`, not here — the bootstrap is intentionally the smallest thing that can run before chezmoi exists.
 
 To rerun a package sync with removal of unlisted formulae: `BUNDLE_CLEANUP=1 chezmoi apply`.
 
@@ -37,6 +38,14 @@ Filenames encode the target path and permissions; renaming a file is a semantic 
 - `.chezmoiscripts/` → scripts executed during `apply`, never written into `$HOME`
 - `run_onchange_` → rerun only when the rendered script content changes
 - `run_onchange_after_` → runs after the file targets have been applied
+- `run_once_` → runs a single time per machine, tracked in chezmoi's state DB
+  (reset with `chezmoi state delete-bucket --bucket=scriptState`)
+
+Three chezmoi-special directories carry no target of their own:
+
+- `.chezmoidata/` → auto-loaded template data (`.packages`)
+- `.chezmoitemplates/` → shared template bodies, pulled in via `includeTemplate`
+- `.chezmoiremove` → targets to *delete* from `$HOME` on every apply
 
 ## Template data
 
@@ -52,7 +61,7 @@ Variables come from `.chezmoi.toml.tmpl`, which prompts once at `chezmoi init` a
 
 Changing prompt defaults in `.chezmoi.toml.tmpl` has no effect on a machine that already answered them; `chezmoi init -va` re-prompts.
 
-Always reference Homebrew paths through `{{ .homebrew_prefix }}` rather than hardcoding, and guard macOS-only blocks with `{{ if eq .chezmoi.os "darwin" }}` — several templates (fish, tmux) also have Linux branches.
+Guard macOS-only blocks with `{{ if eq .chezmoi.os "darwin" }}`; `config.fish.tmpl` and `tmux.conf.tmpl` both carry Linux branches. Reference Homebrew paths through `{{ .homebrew_prefix }}` rather than hardcoding them — but only where the path is genuinely Homebrew's. Code that should work on both OSes resolves binaries at runtime instead (`run_onchange_setup-shell.sh.tmpl` uses `command -v fish`).
 
 ## Adding software
 
