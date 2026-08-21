@@ -1,8 +1,12 @@
 {{ if ne .chezmoi.os "darwin" }}
-Library
-.mutagen.yml
-scripts
+{{/* macOS-only targets: GUI app configs and system-level setup */}}
+.Brewfile
+.config/zed
 .macos
+.mutagen.yml
+Library
 {{ end }}
+{{/* repo-only files that must never land in $HOME */}}
+CLAUDE.md
 readme.md
 scripts

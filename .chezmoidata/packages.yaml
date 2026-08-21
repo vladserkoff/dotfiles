@@ -1,10 +1,18 @@
 packages:
   darwin:
+    # Third-party taps must be declared AND trusted; Homebrew 6 silently
+    # ignores formulae from untrusted taps.
+    taps:
+      universal:
+      personal:
+        - "mutagen-io/mutagen"
+      work:
     brews:
       universal:
         - "bat"
         - "btop"
         - "chezmoi"
+        - "coreutils"
         - "curl"
         - "direnv"
         - "fish"
@@ -20,6 +28,7 @@ packages:
         - "nvtop"
         - "ripgrep"
         - "rsync"
+        - "shellcheck"
         - "ssh-copy-id"
         - "tmux"
         - "tpm"
@@ -71,7 +80,7 @@ packages:
         - name: "Telegram"
           id: "747648890"
       work:
-    fisher:
-      - "ainmosni/fish-aws"
-      - "jorgebucaran/hydro"
-      - "PatrickF1/fzf.fish"
+  fisher:
+    - "ainmosni/fish-aws"
+    - "jorgebucaran/hydro"
+    - "PatrickF1/fzf.fish"

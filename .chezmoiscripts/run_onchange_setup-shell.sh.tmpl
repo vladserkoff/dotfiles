@@ -1,12 +1,16 @@
 #!/bin/bash
+set -euo pipefail
 
-set -ex
+# Make fish the login shell, on macOS and Linux alike.
+fish_path="$(command -v fish || true)"
+[ -n "$fish_path" ] || exit 0
 
-# Check if fish is the default shell
-{{- if eq .chezmoi.os "darwin" }}
-if [ "$SHELL" != "{{ .homebrew_prefix }}/bin/fish" ]; then
-    echo "> Using fish shell"
-    echo {{ .homebrew_prefix }}/bin/fish | sudo tee -a /etc/shells
-    chsh -s {{ .homebrew_prefix }}/bin/fish
+[ "${SHELL:-}" = "$fish_path" ] && exit 0
+
+if ! grep -qxF "$fish_path" /etc/shells; then
+    echo "==> Registering $fish_path in /etc/shells"
+    echo "$fish_path" | sudo tee -a /etc/shells >/dev/null
 fi
-{{ end }}
+
+echo "==> Setting login shell to fish"
+chsh -s "$fish_path"

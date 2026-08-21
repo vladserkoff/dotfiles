@@ -1,0 +1,16 @@
+#!/bin/bash
+set -euo pipefail
+
+# fisher plugins: {{ .packages.fisher | toJson | sha256sum }}
+
+command -v fish >/dev/null 2>&1 || exit 0
+
+# fisher ships as a fish function, not a binary, so probe it through fish.
+if ! fish -c 'functions -q fisher; or type -q fisher' >/dev/null 2>&1; then
+    echo "==> fisher not available; skipping plugin sync" >&2
+    exit 0
+fi
+
+{{ range .packages.fisher -}}
+fish -c 'fisher install {{ . | quote }}'
+{{ end -}}

@@ -1,22 +1,90 @@
 #!/bin/bash
+#
+# Bootstrap a fresh macOS machine to the point where chezmoi can take over.
+#
+# Deliberately small: everything it does is either a hard prerequisite for
+# chezmoi (Xcode CLT, Homebrew) or a safety check. All configuration —
+# packages, dotfiles, macOS defaults, security settings — is applied by
+# chezmoi afterwards, so it is versioned and reviewable rather than hidden
+# inside this script.
+#
+# Needs a controlling terminal: chezmoi reads its init prompts from /dev/tty.
+#
+#   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/vladserkoff/dotfiles/HEAD/scripts/setup)"
+#
+# `curl ... | bash` also works, since /dev/tty is independent of stdin, but the
+# form above additionally keeps stdin a tty so Homebrew's installer stays in
+# interactive mode rather than silently switching to NONINTERACTIVE.
+#
+set -euo pipefail
 
-set -ex
+GITHUB_USER="vladserkoff"
+# Pin by setting HOMEBREW_INSTALL_REF to a commit SHA if you want the installer
+# frozen rather than tracking Homebrew/install HEAD.
+HOMEBREW_INSTALL_REF="${HOMEBREW_INSTALL_REF:-HEAD}"
 
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/MikeMcQuaid/strap/bd8c230a20c4f674efaacc9c250e1328092f1258/bin/strap.sh)"
+log() { printf '\n==> %s\n' "$*"; }
+abort() { printf '\n!!! %s\n' "$*" >&2; exit 1; }
 
-# link .ssh from icloud
-if [ -e /Users/$USER/.ssh ]; then
-    echo "ssh config already symlinked"
-else
-    ln -s "/Users/$USER/Library/Mobile Documents/com~apple~CloudDocs/dev/.ssh" "/Users/$USER/.ssh"
-fi;
+[ "$(uname -s)" = "Darwin" ] || abort "This bootstrap is macOS-only."
+[ "$(id -u)" -ne 0 ] || abort "Run this as yourself, not root."
+groups | grep -qE '\b(admin)\b' || abort "$USER must be in the admin group."
 
-if [[ "$(uname -m)" == "arm64" ]]; then
-  export PATH="/opt/homebrew/bin:$PATH"
-else
-  export PATH="/usr/local/bin:$PATH"
+# chezmoi reads its init prompts from /dev/tty, not stdin. With no controlling
+# terminal it fails partway through `chezmoi init` — after Homebrew has already
+# been installed. Check up front instead.
+if ! (exec 3<>/dev/tty) 2>/dev/null; then
+    abort "No controlling terminal, so chezmoi cannot prompt for is_work/email.
+    Run this from an interactive terminal, or preseed the answers with:
+      chezmoi init --apply $GITHUB_USER \\
+        --promptString \"E-mail=you@example.com\" \\
+        --promptString \"Default AWS profile:=\" \\
+        --promptBool \"Is it a work machine?=false\""
 fi
 
-brew install chezmoi
-chezmoi init vladserkoff
-chezmoi apply
+# Keep the machine awake for the duration.
+caffeinate -s -w $$ &
+
+# --- Xcode Command Line Tools -------------------------------------------------
+if ! /usr/bin/xcode-select -p >/dev/null 2>&1; then
+    log "Installing the Xcode Command Line Tools"
+    placeholder=/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+    touch "$placeholder"
+    label="$(softwareupdate -l 2>/dev/null \
+        | grep -B1 'Command Line Tools' \
+        | awk -F'*' '/^ *\*/ {print $2}' \
+        | sed -e 's/^ *Label: //' -e 's/^ *//' \
+        | sort -V | tail -n1)"
+    rm -f "$placeholder"
+
+    if [ -n "$label" ]; then
+        sudo softwareupdate -i "$label"
+    else
+        # Fall back to the GUI installer and wait for it.
+        xcode-select --install || true
+        log "Complete the Command Line Tools installer, then this will continue"
+        until /usr/bin/xcode-select -p >/dev/null 2>&1; do sleep 10; done
+    fi
+fi
+/usr/bin/xcode-select -p >/dev/null 2>&1 || abort "Command Line Tools are still missing."
+
+# --- Homebrew -----------------------------------------------------------------
+if [ "$(uname -m)" = "arm64" ]; then
+    HOMEBREW_PREFIX=/opt/homebrew
+else
+    HOMEBREW_PREFIX=/usr/local
+fi
+
+if [ ! -x "$HOMEBREW_PREFIX/bin/brew" ]; then
+    log "Installing Homebrew"
+    /bin/bash -c "$(curl -fsSL "https://raw.githubusercontent.com/Homebrew/install/$HOMEBREW_INSTALL_REF/install.sh")"
+fi
+eval "$("$HOMEBREW_PREFIX/bin/brew" shellenv)"
+
+# --- chezmoi ------------------------------------------------------------------
+command -v chezmoi >/dev/null 2>&1 || { log "Installing chezmoi"; brew install chezmoi; }
+
+log "Applying dotfiles"
+chezmoi init --apply "$GITHUB_USER"
+
+log "Done. Open a new terminal to pick up the fish shell."
