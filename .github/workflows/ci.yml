@@ -6,9 +6,15 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  # Every chezmoi call needs this: `init --source` does not persist the source
+  # directory, and CHEZMOI_SOURCE_DIR is not read as config. Without it chezmoi
+  # finds no source dir and every check passes vacuously.
+  CHEZMOI_ARGS: -S ${{ github.workspace }}
+
 jobs:
   render:
-    name: render templates (${{ matrix.os }}, is_work=${{ matrix.is_work }})
+    name: render (${{ matrix.os }}, is_work=${{ matrix.is_work }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -19,47 +25,72 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install chezmoi
-        run: sh -c "$(curl -fsSL https://get.chezmoi.io)" -- -b "$HOME/.local/bin"
+        run: |
+          sh -c "$(curl -fsSL https://get.chezmoi.io)" -- -b "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Initialise with non-interactive prompt answers
+        # --promptString/--promptBool are keyed by the *prompt text* in
+        # .chezmoi.toml.tmpl, not by the data key.
         run: |
-          "$HOME/.local/bin/chezmoi" init \
-            --source="$PWD" \
-            --promptString "email=ci@example.com" \
-            --promptString "aws_profile=" \
-            --promptBool "is_work=${{ matrix.is_work }}"
+          chezmoi $CHEZMOI_ARGS init \
+            --promptString "E-mail=ci@example.com" \
+            --promptString "Default AWS profile:=" \
+            --promptBool "Is it a work machine?=${{ matrix.is_work }}"
+
+      - name: Verify the source dir was actually found
+        run: |
+          count=$(chezmoi $CHEZMOI_ARGS managed | wc -l)
+          echo "managed targets: $count"
+          [ "$count" -gt 0 ] || { echo "::error::no managed targets - source dir not picked up"; exit 1; }
 
       - name: Verify every target renders and applies cleanly
-        run: "$HOME/.local/bin/chezmoi" apply --dry-run --verbose
+        run: chezmoi $CHEZMOI_ARGS apply --dry-run --verbose
 
-      - name: Verify the generated Brewfile parses
+      - name: Verify the generated Brewfile parses and is correctly tiered
         if: runner.os == 'macOS'
         run: |
-          "$HOME/.local/bin/chezmoi" cat ~/.Brewfile > /tmp/Brewfile
+          chezmoi $CHEZMOI_ARGS cat "$HOME/.Brewfile" > /tmp/Brewfile
           cat /tmp/Brewfile
           brew bundle list --file=/tmp/Brewfile >/dev/null
+          if [ "${{ matrix.is_work }}" = "true" ]; then
+            grep -q csvlens /tmp/Brewfile || { echo "::error::work package missing"; exit 1; }
+            ! grep -q transmission /tmp/Brewfile || { echo "::error::personal package leaked into work"; exit 1; }
+          else
+            grep -q transmission /tmp/Brewfile || { echo "::error::personal package missing"; exit 1; }
+            ! grep -q csvlens /tmp/Brewfile || { echo "::error::work package leaked into personal"; exit 1; }
+          fi
 
   lint:
-    name: shellcheck
-    runs-on: ubuntu-latest
+    name: shellcheck (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      # Both OSes: scripts guarded on the other OS render empty, so each runner
+      # only ever lints its own half.
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install chezmoi
-        run: sh -c "$(curl -fsSL https://get.chezmoi.io)" -- -b "$HOME/.local/bin"
+      - name: Install chezmoi and shellcheck
+        run: |
+          sh -c "$(curl -fsSL https://get.chezmoi.io)" -- -b "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          command -v shellcheck >/dev/null || brew install shellcheck
 
       - name: Render scripts and lint them
         run: |
-          "$HOME/.local/bin/chezmoi" init \
-            --source="$PWD" \
-            --promptString "email=ci@example.com" \
-            --promptString "aws_profile=" \
-            --promptBool "is_work=false"
+          chezmoi $CHEZMOI_ARGS init \
+            --promptString "E-mail=ci@example.com" \
+            --promptString "Default AWS profile:=" \
+            --promptBool "Is it a work machine?=false"
           mkdir -p /tmp/rendered
           for f in .chezmoiscripts/*.tmpl; do
             out="/tmp/rendered/$(basename "${f%.tmpl}")"
-            "$HOME/.local/bin/chezmoi" execute-template < "$f" > "$out"
-            # Templates guarded on a non-matching OS render empty; skip those.
+            chezmoi $CHEZMOI_ARGS execute-template < "$f" > "$out"
+            # Guarded on a non-matching OS: renders empty, nothing to lint.
             [ -s "$out" ] || rm -f "$out"
           done
-          shellcheck --severity=warning /tmp/rendered/*.sh scripts/setup
+          echo "linting: $(ls /tmp/rendered)"
+          shellcheck --severity=warning /tmp/rendered/* scripts/setup

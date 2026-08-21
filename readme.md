@@ -15,10 +15,14 @@ Sign in to the App Store first (needed for `mas`), then:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/vladserkoff/dotfiles/HEAD/scripts/setup)"
 ```
 
-Use that form, not `curl ... | bash`. Piping puts the script on stdin, and
-chezmoi's prompts silently return their defaults when stdin is not a terminal
-— which would answer `is_work=false` and provision a work machine as a
-personal one. The script refuses to run without a terminal for this reason.
+Run it from an interactive terminal. chezmoi reads its init prompts (`E-mail`,
+`Is it a work machine?`) from `/dev/tty`, so with no controlling terminal it
+fails partway through — after Homebrew is already installed. The script checks
+for a terminal up front and tells you how to preseed the answers instead.
+
+`curl ... | bash` works too, since `/dev/tty` is independent of stdin, but the
+form above keeps stdin a tty as well, which stops Homebrew's installer from
+silently dropping into `NONINTERACTIVE` mode.
 
 `scripts/setup` installs only the prerequisites chezmoi cannot install itself —
 Xcode Command Line Tools, Homebrew, and chezmoi — then hands off to

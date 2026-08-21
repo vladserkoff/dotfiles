@@ -24,7 +24,7 @@ chezmoi add ~/.some/file      # import an existing dotfile into the source tree
 
 Never hand-edit files in `$HOME` that chezmoi manages — edit the source here, then `apply`. Use `chezmoi add` to pull in an outside change.
 
-Bootstrapping a fresh Mac is `scripts/setup` — Xcode CLT → Homebrew → chezmoi → `chezmoi init --apply`, and nothing else. **It must be run with a terminal on stdin** (`/bin/bash -c "$(curl -fsSL …)"`, never `curl … | bash`): chezmoi's `promptString` silently returns its *default* when stdin is not a tty, so piping would answer `is_work=false` and provision a work machine as a personal one. The script hard-fails on `[ ! -t 0 ]` to make that impossible. It is invoked via the curl one-liner in `readme.md` and is deliberately excluded from both `apply` (`.chezmoiignore.tmpl`) and `chezmoi diff` (`[diff] exclude` in `.chezmoi.toml.tmpl`). Anything that could live in a chezmoi script belongs in `.chezmoiscripts/`, not here — the bootstrap is intentionally the smallest thing that can run before chezmoi exists.
+Bootstrapping a fresh Mac is `scripts/setup` — Xcode CLT → Homebrew → chezmoi → `chezmoi init --apply`, and nothing else. **It requires a controlling terminal**: chezmoi reads init prompts from `/dev/tty` (not stdin), so with no tty `chezmoi init` fails *after* Homebrew is installed. The script checks `exec 3<>/dev/tty` up front and aborts with preseed instructions. Note this is about `/dev/tty`, not stdin — `curl … | bash` prompts fine from a terminal; the documented `"$(curl …)"` form is preferred only because it also keeps stdin a tty, keeping Homebrew's installer interactive. It is invoked via the curl one-liner in `readme.md` and is deliberately excluded from both `apply` (`.chezmoiignore.tmpl`) and `chezmoi diff` (`[diff] exclude` in `.chezmoi.toml.tmpl`). Anything that could live in a chezmoi script belongs in `.chezmoiscripts/`, not here — the bootstrap is intentionally the smallest thing that can run before chezmoi exists.
 
 To rerun a package sync with removal of unlisted formulae: `BUNDLE_CLEANUP=1 chezmoi apply`.
 
@@ -99,7 +99,13 @@ Supported for shell and CLI config only: fish, tmux, git, and fisher plugins. Th
 
 ## CI
 
-`.github/workflows/ci.yml` runs `chezmoi apply --dry-run` on `macos-latest` and `ubuntu-latest` across both `is_work` values, using `chezmoi init --promptString/--promptBool` to answer the prompts non-interactively. It also parses the generated Brewfile and shellchecks the rendered `.chezmoiscripts/`. Templates guarded on a non-matching OS render empty and are skipped by the lint step — if you add a script, make sure its OS guard wraps the *whole* file so this holds.
+`.github/workflows/ci.yml` runs `chezmoi apply --dry-run` on `macos-latest` and `ubuntu-latest` across both `is_work` values, parses the generated Brewfile, asserts the work/personal tiers do not leak into each other, and shellchecks the rendered `.chezmoiscripts/`. Three things about it are easy to get wrong and were each a real bug:
+
+- **Every chezmoi call needs `-S <workspace>`.** `init --source=…` does not persist the source dir, and `CHEZMOI_SOURCE_DIR` is *not* read as config. Without `-S`, chezmoi finds no source dir and every check passes vacuously against zero managed targets — hence the explicit "verify the source dir was actually found" step.
+- **`--promptString`/`--promptBool` are keyed by the prompt *text*, not the data key** — `"E-mail=…"` and `"Is it a work machine?=true"`, not `"email=…"` / `"is_work=true"`. Wrong keys do not error; chezmoi just tries to prompt and then fails on the missing tty.
+- **`run:` values must not begin with a `"`.** YAML parses that as a quoted scalar and rejects the rest of the line. Putting `$HOME/.local/bin` on `$GITHUB_PATH` avoids the whole class.
+
+The lint job runs on both OSes because a script guarded on the other OS renders empty and is skipped — ubuntu alone would never lint the darwin scripts. If you add a script, make sure its OS guard wraps the *whole* file so this holds.
 
 ## Conventions
 
