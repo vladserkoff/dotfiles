@@ -19,6 +19,7 @@
   },
   "auto_signature_help": true,
   "buffer_font_size": 16.0,
+  "cli_default_open_behavior": "new_window",
   "close_on_file_delete": true,
   "file_scan_exclusions": [
     "**/.git",
@@ -43,17 +44,38 @@
   ],
   "format_on_save": "off",
   "languages": {
+    "Make": {
+      "show_edit_predictions": true
+    },
     "Python": {
-      "language_servers": [
-        // Disable basedpyright and enable Ty, and otherwise
-        // use the default configuration.
-        "ty",
-        "!basedpyright",
-        "..."
-      ]
+      // ty only — the default basedpyright is noisy on this setup.
+      "language_servers": ["ty"],
+      "show_edit_predictions": false
     }
   },
   "show_edit_predictions": false,
+  "edit_predictions": {
+    "provider": "zed",
+    "mode": "subtle"
+  },
+  // Panels: everything on the left except the agent.
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "git_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "project_panel": {
+    "dock": "left"
+  },
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
   "telemetry": {
     "diagnostics": false,
     "metrics": false

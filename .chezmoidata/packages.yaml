@@ -10,7 +10,6 @@ packages:
     brews:
       universal:
         - "bat"
-        - "btop"
         - "chezmoi"
         - "coreutils"
         - "curl"
@@ -21,6 +20,7 @@ packages:
         - "git"
         - "git-delta"
         - "git-lfs"
+        - "htop"
         - "httpie"
         - "lazygit"
         - "mas"
@@ -33,6 +33,7 @@ packages:
         - "tmux"
         - "tpm"
         - "tree"
+        - "typst"
         - "uv"
         - "watch"
         - "wget"
@@ -64,11 +65,8 @@ packages:
         - "handbrake-app"
         - "hot"
         - "logi-options+"
-        # - "mactex-no-gui" # painfully slow installation
+        - "proton-drive"
         - "proton-mail"
-        - "proton-pass"
-        - "protonvpn"
-        - "sidequest"
         - "tailscale-app"
         - "the-unarchiver"
         - "transmission"

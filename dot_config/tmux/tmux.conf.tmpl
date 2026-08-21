@@ -12,7 +12,7 @@ set -g @plugin 'tmux-plugins/tmux-sidebar'
 {{ if eq .chezmoi.os "darwin" }}
 run '{{ .homebrew_prefix }}/opt/tpm/share/tpm/tpm'
 {{ else }}
-run '~/.tmux/plugins/tpm/tpm'
+run '~/.config/tmux/plugins/tpm/tpm'
 {{ end }}
 
 set -g @continuum-restore 'on'

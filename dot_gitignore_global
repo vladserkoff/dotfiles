@@ -31,3 +31,5 @@ htmlcov/
 # Local development
 .env.local
 .env
+
+**/.claude/settings.local.json
