@@ -9,7 +9,13 @@ set -euo pipefail
 # Only the sudo_local path (macOS Sonoma and later) is handled: it survives OS
 # updates, and appending to /etc/pam.d/sudo directly is order-sensitive and
 # easy to get wrong.
-if ls /usr/lib/pam | grep -q pam_tid.so; then
+# The module is versioned (pam_tid.so.2), so match with a glob rather than
+# testing for a bare pam_tid.so, which never exists.
+shopt -s nullglob
+pam_tid_modules=(/usr/lib/pam/pam_tid.so*)
+shopt -u nullglob
+
+if [ ${#pam_tid_modules[@]} -gt 0 ]; then
     if [ -f /etc/pam.d/sudo_local ] || [ -f /etc/pam.d/sudo_local.template ]; then
         pam_file=/etc/pam.d/sudo_local
         if [ ! -f "$pam_file" ]; then
