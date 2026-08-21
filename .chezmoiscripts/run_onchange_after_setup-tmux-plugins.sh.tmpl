@@ -1,0 +1,27 @@
+#!/bin/bash
+set -euo pipefail
+
+# tmux.conf: {{ include "dot_config/tmux/tmux.conf.tmpl" | sha256sum }}
+
+# tpm's bin/install_plugins clones every `@plugin` listed in tmux.conf without
+# needing a running session, so `prefix + I` is only for refreshing by hand.
+command -v tmux >/dev/null 2>&1 || exit 0
+
+{{ if eq .chezmoi.os "darwin" -}}
+tpm_dir="{{ .homebrew_prefix }}/opt/tpm/share/tpm"
+if [ ! -x "$tpm_dir/bin/install_plugins" ]; then
+    echo "==> tpm not installed; skipping tmux plugin sync" >&2
+    exit 0
+fi
+{{ else -}}
+# No package management on Linux, so bootstrap tpm into the plugin directory
+# it manages itself — the same path tmux.conf's `run` line points at.
+tpm_dir="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/plugins/tpm"
+if [ ! -d "$tpm_dir" ]; then
+    command -v git >/dev/null 2>&1 || exit 0
+    echo "==> Cloning tpm into $tpm_dir"
+    git clone --depth 1 https://github.com/tmux-plugins/tpm "$tpm_dir"
+fi
+{{ end }}
+echo "==> Installing tmux plugins"
+"$tpm_dir/bin/install_plugins"

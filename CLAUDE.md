@@ -95,6 +95,12 @@ fish is the login shell; `run_onchange_setup-shell.sh.tmpl` registers it in `/et
 
 Note that fisher installs into `~/.config/fish/{functions,completions,conf.d}` alongside chezmoi's managed files. chezmoi leaves unmanaged files alone, so the two coexist, but `chezmoi unmanaged ~/.config/fish` is worth checking before adding anything there.
 
+## tmux
+
+Plugins are declared as `@plugin` lines in `dot_config/tmux/tmux.conf.tmpl` and installed by `run_onchange_after_setup-tmux-plugins.sh.tmpl`, so `prefix + I` inside a live session is only ever needed to refresh by hand. tpm's `bin/install_plugins` does not need a running client — it runs `tmux start-server` itself, which sources the config and sets `TMUX_PLUGIN_MANAGER_PATH` — so an unattended `apply` can do the first install. The script embeds `{{ include "dot_config/tmux/tmux.conf.tmpl" | sha256sum }}` so it refires on any tmux.conf change, and the `after_` prefix guarantees the config is written before tpm reads it.
+
+Because `~/.config/tmux/tmux.conf` exists, tpm puts plugins in `~/.config/tmux/plugins/`, **not** `~/.tmux/plugins/` — both the `run` line and the install script must agree on that path. On macOS tpm comes from the `tpm` formula and is run out of `{{ .homebrew_prefix }}/opt/tpm/share/tpm`; on Linux there is no package manager, so the script clones tpm into the plugin directory on first apply.
+
 ## Linux
 
 Supported for shell and CLI config only: fish, tmux, git, and fisher plugins. There is deliberately no Linux package management. `.chezmoiignore.tmpl` excludes the macOS-only targets (`~/.Brewfile`, `~/.config/zed`, `~/Library`, `.macos`, `.mutagen.yml`) on non-darwin. Keep new GUI app configs out of Linux by adding them to that block.
