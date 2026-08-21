@@ -67,13 +67,15 @@ Guard macOS-only blocks with `{{ if eq .chezmoi.os "darwin" }}`; `config.fish.tm
 
 Edit `.chezmoidata/packages.yaml` only. `.chezmoitemplates/Brewfile` renders that data into a Brewfile body; `dot_Brewfile.tmpl` pulls it in via `includeTemplate` so `~/.Brewfile` is a **chezmoi-managed target** — package changes appear as a real diff in `chezmoi diff`. `run_onchange_after_darwin-install-packages.sh.tmpl` then just runs `brew bundle --global`; it reruns because it embeds `{{ includeTemplate "Brewfile" . | sha256sum }}`, so it fires exactly when the rendered Brewfile changes. The `after_` prefix is load-bearing: it guarantees `~/.Brewfile` is written before `brew bundle` reads it.
 
-Each of `brews`, `casks`, `mas` is split into three tiers:
+Each of `taps`, `brews`, `casks`, `mas` is split into three tiers:
 
 - `universal` — every machine
 - `personal` — only when `is_work = false`
 - `work` — only when `is_work = true`
 
 `mas` entries are objects (`name` + numeric `id`); the App Store must be signed in before the first apply. `fisher` plugins live at the top level of `packages.yaml`, not under `darwin`, and install on every OS via `run_onchange_after_setup-fisher.sh.tmpl`.
+
+Any formula from a non-official tap needs its tap listed under `taps` in the same tier. Homebrew 6 requires explicit trust for non-official taps and **silently ignores** formulae from untrusted ones, so an undeclared tap means the package just never installs on a fresh machine — with `brew bundle` still exiting 0. The install script therefore runs `brew trust --tap` for every tap it finds in the rendered Brewfile before bundling, and CI fails if a `user/repo/formula` entry has no matching `tap` line. Note trust state lives in `~/.homebrew/trust.json`, which chezmoi does not manage, so an already-working machine tells you nothing about a fresh one.
 
 `BUNDLE_CLEANUP` is read at *runtime*, not template time — gating it in the template would change the rendered script body and pollute the `run_onchange_` hash.
 

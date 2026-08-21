@@ -50,6 +50,11 @@ Entries are tiered: `universal` goes everywhere, `personal` applies when
 `is_work` is false, `work` when it is true. `fisher` plugins sit at the top
 level and install on every OS.
 
+Formulae from non-official taps also need the tap listed under `taps` in the
+same tier — Homebrew silently ignores formulae from taps that are not
+explicitly trusted, so an undeclared tap means the package quietly never
+installs.
+
 ## Layout
 
 | Path | Purpose |

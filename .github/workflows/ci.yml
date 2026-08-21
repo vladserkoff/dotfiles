@@ -22,7 +22,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         is_work: [true, false]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install chezmoi
         run: |
@@ -52,7 +52,18 @@ jobs:
         run: |
           chezmoi $CHEZMOI_ARGS cat "$HOME/.Brewfile" > /tmp/Brewfile
           cat /tmp/Brewfile
+          # `brew bundle` runs Homebrew's diagnostics, which may warn about
+          # untrusted taps already present on the runner image (e.g. aws/tap).
+          # That is runner state, not this repo's config, and is not silenced
+          # here: HOMEBREW_NO_REQUIRE_TAP_TRUST=1 is the only lever and
+          # Homebrew explicitly discourages it.
           brew bundle list --file=/tmp/Brewfile >/dev/null
+          # Every non-official tap a formula comes from must be declared, or
+          # Homebrew will silently ignore it on a fresh machine.
+          grep -o '^brew "[^/"]*/[^/"]*/' /tmp/Brewfile | sed 's/^brew "//;s|/$||' | sort -u \
+            | while read -r t; do
+                grep -q "^tap \"$t\"" /tmp/Brewfile || { echo "::error::formula from undeclared tap $t"; exit 1; }
+              done
           if [ "${{ matrix.is_work }}" = "true" ]; then
             grep -q csvlens /tmp/Brewfile || { echo "::error::work package missing"; exit 1; }
             ! grep -q transmission /tmp/Brewfile || { echo "::error::personal package leaked into work"; exit 1; }
@@ -71,7 +82,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install chezmoi and shellcheck
         run: |

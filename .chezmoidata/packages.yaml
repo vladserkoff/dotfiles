@@ -1,5 +1,12 @@
 packages:
   darwin:
+    # Third-party taps must be declared AND trusted; Homebrew 6 silently
+    # ignores formulae from untrusted taps.
+    taps:
+      universal:
+      personal:
+        - "mutagen-io/mutagen"
+      work:
     brews:
       universal:
         - "bat"

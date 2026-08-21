@@ -5,6 +5,16 @@ set -euo pipefail
 # Reruns whenever the rendered ~/.Brewfile changes.
 # Brewfile hash: {{ includeTemplate "Brewfile" . | sha256sum }}
 
+# Homebrew 6 requires explicit trust for non-official taps and silently
+# ignores formulae from untrusted ones, so a fresh machine would skip them.
+# Read the taps back out of the rendered Brewfile rather than duplicating the
+# universal/personal/work tier logic here.
+while read -r tap; do
+    [ -n "$tap" ] || continue
+    echo "==> Trusting tap $tap"
+    brew trust --tap "$tap"
+done < <(sed -n 's/^tap "\(.*\)"$/\1/p' "$HOME/.Brewfile")
+
 brew bundle --global
 
 # Removing formulae is destructive, so it is opt-in per run rather than a
