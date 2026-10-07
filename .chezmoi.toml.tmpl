@@ -1,15 +1,18 @@
+{{- $name := promptStringOnce . "name" "Full name" "Vladislav" -}}
 {{- $email := promptStringOnce . "email" "E-mail" "9671366+vladserkoff@users.noreply.github.com" -}}
 {{- $is_work := promptBoolOnce . "is_work" "Is it a work machine?" false -}}
 {{- $aws_profile := promptStringOnce . "aws_profile" "Default AWS profile:" "" -}}
 
-{{/* homebrew prefix on intel and arm macs is different */}}
+{{/* Homebrew's default prefix: per-arch on macOS, fixed on Linux */}}
 {{- $homebrew_prefix := "/opt/homebrew" -}}
-{{- if (and (eq .chezmoi.os "darwin") (eq .chezmoi.arch "amd64")) -}}
-    {{- $homebrew_prefix = "/usr/local" }}
+{{- if eq .chezmoi.os "linux" -}}
+    {{- $homebrew_prefix = "/home/linuxbrew/.linuxbrew" -}}
+{{- else if eq .chezmoi.arch "amd64" -}}
+    {{- $homebrew_prefix = "/usr/local" -}}
 {{- end -}}
 
 [data]
-    name = "Vladislav"
+    name = {{ $name | quote }}
     email = {{ $email | quote }}
     is_work = {{ $is_work }}
     homebrew_prefix = {{ $homebrew_prefix | quote }}

@@ -53,10 +53,10 @@ Variables come from `.chezmoi.toml.tmpl`, which prompts once at `chezmoi init` a
 
 | Variable | Source |
 | --- | --- |
-| `.name`, `.email` | prompt (`promptStringOnce`) |
+| `.name`, `.email` | prompt (`promptStringOnce`); `.name` feeds git's `user.name` |
 | `.is_work` | prompt; gates work-vs-personal package sets |
 | `.aws_profile` | prompt; exported as `AWS_PROFILE` in fish |
-| `.homebrew_prefix` | derived from arch — `/opt/homebrew` on arm64, `/usr/local` on amd64 |
+| `.homebrew_prefix` | Homebrew's default prefix — `/opt/homebrew` on Apple silicon, `/usr/local` on Intel Macs, `/home/linuxbrew/.linuxbrew` on Linux |
 | `.packages` | `.chezmoidata/packages.yaml` (all files under `.chezmoidata/` are auto-loaded) |
 
 Changing prompt defaults in `.chezmoi.toml.tmpl` has no effect on a machine that already answered them; `chezmoi init -va` re-prompts.
@@ -77,7 +77,7 @@ Each of `taps`, `brews`, `casks`, `mas` is split into three tiers:
 
 Any formula from a non-official tap needs its tap listed under `taps` in the same tier. Homebrew 6 requires explicit trust for non-official taps and **silently ignores** formulae from untrusted ones, so an undeclared tap means the package just never installs on a fresh machine — with `brew bundle` still exiting 0. The install script therefore runs `brew trust --tap` for every tap it finds in the rendered Brewfile before bundling, and CI fails if a `user/repo/formula` entry has no matching `tap` line. Note trust state lives in `~/.homebrew/trust.json`, which chezmoi does not manage, so an already-working machine tells you nothing about a fresh one.
 
-`BUNDLE_CLEANUP` is read at *runtime*, not template time — gating it in the template would change the rendered script body and pollute the `run_onchange_` hash.
+Cleanup lives in its own `run_after_darwin-prune-packages.sh.tmpl`, which runs on every apply and exits unless `BUNDLE_CLEANUP=1`. It cannot live in the install script: that one only reruns when the rendered Brewfile changes, and an environment variable never changes it. Read `BUNDLE_CLEANUP` at runtime, never at template time — a template-time read would change the rendered body and churn the script's state.
 
 ## macOS defaults and security
 
@@ -110,7 +110,7 @@ Supported for shell and CLI config only: fish, tmux, git, and fisher plugins. Th
 `.github/workflows/ci.yml` runs `chezmoi apply --dry-run` on `macos-latest` and `ubuntu-latest` across both `is_work` values, parses the generated Brewfile, asserts the work/personal tiers do not leak into each other, and shellchecks the rendered `.chezmoiscripts/`. Three things about it are easy to get wrong and were each a real bug:
 
 - **Every chezmoi call needs `-S <workspace>`.** `init --source=…` does not persist the source dir, and `CHEZMOI_SOURCE_DIR` is *not* read as config. Without `-S`, chezmoi finds no source dir and every check passes vacuously against zero managed targets — hence the explicit "verify the source dir was actually found" step.
-- **`--promptString`/`--promptBool` are keyed by the prompt *text*, not the data key** — `"E-mail=…"` and `"Is it a work machine?=true"`, not `"email=…"` / `"is_work=true"`. Wrong keys do not error; chezmoi just tries to prompt and then fails on the missing tty.
+- **`--promptString`/`--promptBool` are keyed by the prompt *text*, not the data key** — `"E-mail=…"` and `"Is it a work machine?=true"`, not `"email=…"` / `"is_work=true"`. Every prompt in `.chezmoi.toml.tmpl` needs a matching flag in both CI `init` calls and in the preseed hint in `scripts/setup`. Wrong keys do not error; chezmoi just tries to prompt and then fails on the missing tty.
 - **`run:` values must not begin with a `"`.** YAML parses that as a quoted scalar and rejects the rest of the line. Putting `$HOME/.local/bin` on `$GITHUB_PATH` avoids the whole class.
 
 The lint job runs on both OSes because a script guarded on the other OS renders empty and is skipped — ubuntu alone would never lint the darwin scripts. If you add a script, make sure its OS guard wraps the *whole* file so this holds.

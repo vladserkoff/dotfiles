@@ -16,10 +16,4 @@ while read -r tap; do
 done < <(sed -n 's/^tap "\(.*\)"$/\1/p' "$HOME/.Brewfile")
 
 brew bundle --global
-
-# Removing formulae is destructive, so it is opt-in per run rather than a
-# template-time toggle (which would otherwise churn this script's hash).
-if [ "${BUNDLE_CLEANUP:-0}" = "1" ]; then
-    brew bundle cleanup --global --force
-fi
 {{ end -}}

@@ -34,6 +34,7 @@ jobs:
         # .chezmoi.toml.tmpl, not by the data key.
         run: |
           chezmoi $CHEZMOI_ARGS init \
+            --promptString "Full name=CI" \
             --promptString "E-mail=ci@example.com" \
             --promptString "Default AWS profile:=" \
             --promptBool "Is it a work machine?=${{ matrix.is_work }}"
@@ -93,6 +94,7 @@ jobs:
       - name: Render scripts and lint them
         run: |
           chezmoi $CHEZMOI_ARGS init \
+            --promptString "Full name=CI" \
             --promptString "E-mail=ci@example.com" \
             --promptString "Default AWS profile:=" \
             --promptBool "Is it a work machine?=false"

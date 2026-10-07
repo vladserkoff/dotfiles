@@ -34,9 +34,10 @@ groups | grep -qE '\b(admin)\b' || abort "$USER must be in the admin group."
 # terminal it fails partway through `chezmoi init` — after Homebrew has already
 # been installed. Check up front instead.
 if ! (exec 3<>/dev/tty) 2>/dev/null; then
-    abort "No controlling terminal, so chezmoi cannot prompt for is_work/email.
+    abort "No controlling terminal, so chezmoi cannot prompt for name/email/is_work.
     Run this from an interactive terminal, or preseed the answers with:
       chezmoi init --apply $GITHUB_USER \\
+        --promptString \"Full name=Your Name\" \\
         --promptString \"E-mail=you@example.com\" \\
         --promptString \"Default AWS profile:=\" \\
         --promptBool \"Is it a work machine?=false\""

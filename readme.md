@@ -15,8 +15,8 @@ Sign in to the App Store first (needed for `mas`), then:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/vladserkoff/dotfiles/HEAD/scripts/setup)"
 ```
 
-Run it from an interactive terminal. chezmoi reads its init prompts (`E-mail`,
-`Is it a work machine?`) from `/dev/tty`, so with no controlling terminal it
+Run it from an interactive terminal. chezmoi reads its init prompts (`Full name`,
+`E-mail`, `Is it a work machine?`) from `/dev/tty`, so with no controlling terminal it
 fails partway through — after Homebrew is already installed. The script checks
 for a terminal up front and tells you how to preseed the answers instead.
 

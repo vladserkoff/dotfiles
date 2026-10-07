@@ -1,0 +1,14 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+set -euo pipefail
+
+# Opt-in removal of anything not in ~/.Brewfile: `BUNDLE_CLEANUP=1 chezmoi apply`.
+# This lives apart from the install script because that one only reruns when
+# the rendered Brewfile changes, and an environment variable never changes it.
+# As a plain run_after_ script this runs on every apply, and is a no-op unless
+# asked. It sorts after darwin-install-packages, so it sees the current Brewfile.
+[ "${BUNDLE_CLEANUP:-0}" = "1" ] || exit 0
+
+echo "==> Removing packages not listed in ~/.Brewfile"
+brew bundle cleanup --global --force
+{{ end -}}
