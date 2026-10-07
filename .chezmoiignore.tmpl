@@ -6,6 +6,10 @@
 .mutagen.yml
 Library
 {{ end }}
+{{ if .is_work }}
+{{/* personal-only targets */}}
+.config/fish/functions/tomp4.fish
+{{ end }}
 {{/* repo-only files that must never land in $HOME */}}
 CLAUDE.md
 readme.md

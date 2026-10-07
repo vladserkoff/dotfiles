@@ -39,6 +39,7 @@ packages:
         - "wget"
       personal:
         - "exiftool"
+        - "ffmpeg"
         - "mutagen-io/mutagen/mutagen"
         - "tailwindcss"
         - "wakeonlan"
