@@ -83,7 +83,7 @@ Any formula from a non-official tap needs its tap listed under `taps` in the sam
 
 `.macos` is a plain `defaults write` script, not a template, and it is not applied to `$HOME`. It is invoked by `run_onchange_setup-defaults.sh.tmpl`, which embeds `{{ include ".macos" | sha256sum }}` in a comment so that editing `.macos` changes the rendered script and retriggers it. Keep that hash line, and keep it on its own line — a `{{- ... -}}` trim there once swallowed the following statement into the comment. The script ends by restarting Dock/Finder/SystemUIServer/ControlCenter, so an apply visibly restarts UI elements.
 
-Sudo-requiring system settings live separately in `run_onchange_darwin-security.sh.tmpl` (TouchID for sudo, application firewall, a FileVault *warning* that never aborts). They are kept out of `.macos` so that script can keep running unprivileged. These were previously inherited from strap.
+Sudo-requiring system settings live separately in `run_onchange_darwin-security.sh.tmpl` (TouchID for sudo, application firewall, a FileVault *warning* that never aborts). They are kept out of `.macos` so that script can keep running unprivileged.
 
 `run_once_darwin-link-ssh.sh.tmpl` symlinks `~/.ssh` to iCloud Drive on personal machines only, and refuses to create a dangling link if iCloud has not synced.
 
@@ -91,7 +91,7 @@ Sudo-requiring system settings live separately in `run_onchange_darwin-security.
 
 fish is the login shell; `run_onchange_setup-shell.sh.tmpl` registers it in `/etc/shells` and runs `chsh` (needs sudo). It is OS-agnostic — it resolves fish via `command -v`, not `homebrew_prefix`. Interactive config lives in `dot_config/private_fish/config.fish.tmpl` (abbreviations, `brew shellenv`, direnv/mise/cargo hooks); `conf.d/*.fish` files are auto-sourced and are the place for topic-scoped additions such as `wol.fish`.
 
-**Do not generate completions into `~/.config/fish/completions/`.** That directory sorts first on `$fish_complete_path`, so anything written there shadows the current, package-manager-supplied completions in `$HOMEBREW_PREFIX/share/fish/vendor_completions.d/` — Homebrew already ships fish completions for docker, uv, uvx, bat, gh, rg, delta, chezmoi and more. An earlier version of this repo did exactly that and served nine-month-old copies as a result; `.chezmoiremove` now deletes those three files on every machine. The `generate_completions` function is an on-demand Linux fallback only: it writes to `~/.local/share/fish/vendor_completions.d/` and skips any command that already has a packaged completion.
+**Do not generate completions into `~/.config/fish/completions/`.** That directory sorts first on `$fish_complete_path`, so anything written there shadows the current, package-manager-supplied completions in `$HOMEBREW_PREFIX/share/fish/vendor_completions.d/` — Homebrew already ships fish completions for docker, uv, uvx, bat, gh, rg, delta, chezmoi and more. `.chezmoiremove` deletes the docker, uv and uvx copies an earlier version of this repo wrote there, on every machine. The `generate_completions` function is an on-demand Linux fallback only: it writes to `~/.local/share/fish/vendor_completions.d/` and skips any command that already has a packaged completion.
 
 Note that fisher installs into `~/.config/fish/{functions,completions,conf.d}` alongside chezmoi's managed files. chezmoi leaves unmanaged files alone, so the two coexist, but `chezmoi unmanaged ~/.config/fish` is worth checking before adding anything there.
 
